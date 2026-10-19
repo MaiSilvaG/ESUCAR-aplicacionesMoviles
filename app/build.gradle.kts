@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    //sqlite
+    id("com.google.devtools.ksp") version "2.3.2"
 }
 
 android {
@@ -55,10 +57,15 @@ dependencies {
     //nuevas cosas
 
     //navbar
-    implementation("androidx.navigation:navigation-ui:2.10.2")
     implementation("androidx.navigation:navigation-compose:2.10.2")
-    implementation("androidx.navigation:navigation-fragment:2.10.2")
     //iconos
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.navigation:navigation-compose:2.10.2")
+
+    //room
+    val room_version = "2.8.5"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
 }
