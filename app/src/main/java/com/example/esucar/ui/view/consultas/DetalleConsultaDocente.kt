@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.esucar.data.relation.ConsultaDetalle
-
+import androidx.compose.foundation.layout.imePadding
 
 @Composable
 fun DetalleConsultaDocente(innerPadding: PaddingValues,
@@ -36,7 +36,7 @@ fun DetalleConsultaDocente(innerPadding: PaddingValues,
     var respuesta by remember(consulta.id) { mutableStateOf("") }
 
     LazyColumn(
-        Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        Modifier.fillMaxSize().imePadding().padding(horizontal = 16.dp),
         contentPadding = innerPadding,
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
