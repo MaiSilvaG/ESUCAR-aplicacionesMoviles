@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -142,11 +143,15 @@ fun AsignaturasCard(item: AsignaturaConProgreso,
     ) {
         Column(Modifier.fillMaxWidth()) {
             Column(
-                Modifier.fillMaxWidth().height(120.dp),
+                Modifier.fillMaxWidth().height(200.dp),
                 Arrangement.Center,
                 Alignment.CenterHorizontally
             ) {
-                Image(painterResource(R.drawable.ic_launcher_foreground), "imagen asignatura")
+                Image(painterResource(R.drawable.fondo),
+                    "imagen asignatura",
+                    modifier = Modifier.fillMaxWidth().height(200.dp),
+                    contentScale = ContentScale.Crop
+                )
             }
 
             HorizontalDivider(color = Color.Black, thickness = 1.dp)

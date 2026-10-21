@@ -33,7 +33,6 @@ fun DetalleAsignaturaEstudiante(
 ) {
     val unidadesAsignatura by remember(asignaturaId) { viewModel.unidades(asignaturaId) }
         .collectAsState(initial = emptyList())
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()

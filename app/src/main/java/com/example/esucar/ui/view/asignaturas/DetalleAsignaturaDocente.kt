@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.collectAsState
+import com.example.esucar.model.SubDestination
 
 @Composable
 fun DetalleAsignaturaDocente(
@@ -43,7 +44,11 @@ fun DetalleAsignaturaDocente(
 
         item{
             Button(
-                onClick = {/*publicar material*/},
+                onClick = {
+                    navController.navigate(
+                        SubDestination.PublicarMaterial.createRoute(asignaturaId)
+                    )
+                },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
             ){
                 Icon(

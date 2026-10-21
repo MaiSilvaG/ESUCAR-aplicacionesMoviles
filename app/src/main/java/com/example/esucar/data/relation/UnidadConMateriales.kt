@@ -7,6 +7,10 @@ import com.example.esucar.data.entity.Unidad
 
 data class UnidadConMateriales(
     @Embedded val unidad: Unidad,
-    @Relation(parentColumn = "id", entityColumn = "unidadId")
-    val materiales: List<Material>
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "unidadId",
+        entity = Material::class
+    )
+    val materiales: List<Material> = emptyList()
 )

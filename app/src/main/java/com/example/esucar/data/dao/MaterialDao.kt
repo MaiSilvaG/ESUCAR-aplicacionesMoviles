@@ -19,9 +19,4 @@ interface MaterialDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarTodos(lista: List<Material>)
 
-    @Update
-    suspend fun actualizar(material: Material)
-
-    @Delete
-    suspend fun eliminar(material: Material)
 }

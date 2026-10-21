@@ -29,6 +29,7 @@ import com.example.esucar.model.SubDestination
 import com.example.esucar.ui.view.asignaturas.Asignaturas
 import com.example.esucar.ui.view.asignaturas.DetalleAsignatura
 import com.example.esucar.ui.view.asignaturas.DetalleAsignaturaViewModel
+import com.example.esucar.ui.view.asignaturas.PublicarMaterial
 import com.example.esucar.ui.view.home.Inicio
 import com.example.esucar.ui.view.consultas.Consultas
 import com.example.esucar.ui.view.consultas.DetalleConsulta
@@ -125,6 +126,7 @@ fun AppNavHost(
             }
 
             //rutas secundarias
+            //detalles asignatura
             composable(
                 route = SubDestination.DetalleAsignatura.route,
                 arguments = listOf(navArgument("asignaturaId") { type = NavType.IntType })
@@ -138,6 +140,7 @@ fun AppNavHost(
                 )
             }
 
+            //detalle consulta
             composable(
                 route = SubDestination.DetalleConsulta.route,
                 arguments = listOf(navArgument("consultaId"){type = NavType.IntType})
@@ -149,12 +152,25 @@ fun AppNavHost(
                 )
             }
 
+            //formulario consulta
             composable(
                 route = SubDestination.FormularioConsulta.route,
                 arguments = listOf(navArgument("asignaturaId"){type = NavType.IntType})
             ){backStackEntry ->
                 val asignaturaId = backStackEntry.arguments?.getInt("asignaturaId") ?: 0
                 FormularioConsulta(
+                    navController = navController
+                )
+            }
+
+            //formulario añadir material
+            composable(
+                route = SubDestination.PublicarMaterial.route,
+                arguments = listOf(navArgument("asignaturaId") {type = NavType.IntType})
+            ) {backStackEntry ->
+                val asignaturaId = backStackEntry.arguments?.getInt("asignaturaId") ?: 0
+                PublicarMaterial(
+                    asignaturaId = asignaturaId,
                     navController = navController
                 )
             }

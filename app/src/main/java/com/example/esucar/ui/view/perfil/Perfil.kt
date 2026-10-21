@@ -7,14 +7,11 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -50,12 +47,12 @@ import androidx.navigation.NavController
 import com.example.esucar.ui.view.navigation.AuthDestination
 import com.example.esucar.ui.view.navigation.Destination
 import android.app.Application
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.esucar.data.AppDatabase
+import com.example.esucar.data.Sesion
 import com.example.esucar.data.relation.AsignaturaConProgreso
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -65,11 +62,13 @@ class PerfilViewModel(app: Application) : AndroidViewModel(app) {
 
     val asignaturas = db.asignaturaDao().obtenerConProgreso()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val consultasPendientes = db.consultaDao().contarPendientes()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000),0)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Perfil(navController: NavController) {
+fun Perfil(navController: NavController, viewModel: PerfilViewModel = viewModel()) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
@@ -111,70 +110,72 @@ fun Perfil(navController: NavController) {
             )
         },
     ) { innerPadding ->
-        InteriorPerfil(innerPadding, navController)
-    }
-}
-
-@Composable
-fun InteriorPerfil(innerPadding: PaddingValues,
-                   navController: NavController,
-                   viewModel: PerfilViewModel = viewModel()
-) {
-    val lista by viewModel.asignaturas.collectAsState()
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = innerPadding,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item {
-            Encabezado()
+        if(Sesion.esDocente){
+            PerfilDocente(innerPadding,navController,viewModel)
         }
-        item {
-            InformacionPersonal()
-        }
-        item {
-            MiActividad(lista)
-        }
-        item {
-            MisAsignaturas(lista)
-        }
-        item {
-            MaterialesDescargados()
-        }
-        item {
-            Configuracion()
-        }
-        item{
-            Button(
-                onClick = {navController.navigate(AuthDestination.LOGIN)},
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
-            ){
-                Icon(
-                    Icons.AutoMirrored.Filled.Logout,
-                    "cerrar sesion"
-                )
-                Text("Cerrar Sesion")
-            }
+        else{
+            PerfilEstudiante(innerPadding,navController,viewModel)
         }
     }
 }
 
 @Composable
-fun Encabezado(){
+fun SeccionPerfil(titulo: String,contenido: @Composable ColumnScope.() -> Unit){
+    var expanded by remember { mutableStateOf(false) }
+    val degrees by animateFloatAsState(if(expanded) 90f else 0f)
+
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clickable{expanded = !expanded}
+                .padding(16.dp),
+            Arrangement.SpaceBetween,
+            Alignment.CenterVertically
+        ) {
+            Text(
+                titulo,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Icon(
+                Icons.Default.ChevronRight,
+                if(expanded) "Colapsar" else "Expandir",
+                modifier = Modifier.rotate(degrees)
+            )
+        }
+
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                Arrangement.spacedBy(8.dp),
+                content = contenido
+            )
+        }
+        HorizontalDivider(color = Color.LightGray)
+    }
+}
+
+@Composable
+fun Encabezado(rol: String){
     Column(
         Modifier.fillMaxWidth().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(
-            "Nombre",
+            Sesion.usuario?.nombre?.substringBefore(" ") ?: "Nombre",
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            "Estudiante",
+            rol,
             fontSize = 19.sp,
             color = Color.Gray
         )
@@ -183,288 +184,73 @@ fun Encabezado(){
 
 @Composable
 fun InformacionPersonal(){
-    var expanded by remember { mutableStateOf(false) }
-    val degrees by animateFloatAsState(if(expanded) 90f else 0f)
+    val usuario = Sesion.usuario
 
-    Column(Modifier.fillMaxWidth()) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .clickable{expanded = !expanded}
-                .padding(16.dp),
-            Arrangement.SpaceBetween,
-            Alignment.CenterVertically
-        ) {
-            Text(
-                "Informacion Personal",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Icon(
-                Icons.Default.ChevronRight,
-                if(expanded) "Colapsar" else "Expandir",
-                modifier = Modifier.rotate(degrees)
-            )
-        }
-
-        AnimatedVisibility(
-            visible = expanded,
-            enter = expandVertically(),
-            exit = shrinkVertically()
-        ) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    "Nombre: Maria Silva",
-                    fontSize = 16.sp
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    "Correo: mai.silvag@duocuc.cl",
-                    fontSize = 16.sp
-                )
-            }
-        }
-        HorizontalDivider(color = Color.LightGray)
-    }
-}
-
-@Composable
-fun MiActividad(lista: List<AsignaturaConProgreso>){
-    var expanded by remember { mutableStateOf(false) }
-    val degrees by animateFloatAsState(if (expanded) 90f else 0f)
-
-    val totalAsignaturas = lista.size
-    val totalMaterial = lista.sumOf { it.totalMateriales }
-    val materialesEstudiados = lista.sumOf { it.materialEstudiado }
-    val progresoGeneral = if (totalMaterial > 0) {
-        (materialesEstudiados * 100) / totalMaterial
-    } else {
-        0
-    }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = !expanded }
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "Mi Actividad",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            )
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = if (expanded) "Colapsar" else "Expandir",
-                modifier = Modifier.rotate(degrees)
-            )
-        }
-
-        AnimatedVisibility(
-            visible = expanded,
-            enter = expandVertically(),
-            exit = shrinkVertically()
-        ) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    "Asignaturas Inscritas: $totalAsignaturas",
-                    fontSize = 16.sp
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    "Progreso General: $progresoGeneral%",
-                    fontSize = 16.sp
-                )
-            }
-        }
-        HorizontalDivider(color = Color.LightGray)
+    SeccionPerfil("Informacion Personal") {
+        Text(
+            "Nombre: ${usuario?.nombre ?: "-"}",
+            fontSize = 16.sp
+        )
+        Text(
+            "Correo: ${usuario?.correo ?: "-"}",
+            fontSize = 16.sp
+        )
     }
 }
 
 @Composable
 fun MisAsignaturas(lista: List<AsignaturaConProgreso>) {
-    var expanded by remember { mutableStateOf(false) }
-    val degrees by animateFloatAsState(if (expanded) 90f else 0f)
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = !expanded }
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    SeccionPerfil("Mis Asignaturas") {
+        lista.forEach { item ->
             Text(
-                "Mis Asignaturas",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            )
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = if (expanded) "Colapsar" else "Expandir",
-                modifier = Modifier.rotate(degrees)
+                "* ${item.asignatura.nombre} - (${item.asignatura.codigo})",
+                fontSize = 16.sp
             )
         }
-
-        AnimatedVisibility(
-            visible = expanded,
-            enter = expandVertically(),
-            exit = shrinkVertically()
-        ) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                Arrangement.spacedBy(8.dp)
-            ) {
-                lista.forEach { item ->
-                    Text(
-                        "• ${item.asignatura.nombre} (${item.asignatura.codigo})",
-                        fontSize = 16.sp
-                    )
-                    Spacer(Modifier.width(4.dp))
-                }
-            }
-        }
-        HorizontalDivider(color = Color.LightGray)
     }
 }
 
-@Composable
-fun MaterialesDescargados(){
-    var expanded by remember { mutableStateOf(false) }
-    val degrees by animateFloatAsState(if (expanded) 90f else 0f)
-
-    val descargados = listOf(
-        "Apuntes de la unidad" to "PDF",
-        "Video de Compose" to "Video",
-        "Guía de ejercicios" to "PDF"
-    )
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = !expanded }
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "Materiales Descargados",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            )
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = if (expanded) "Colapsar" else "Expandir",
-                modifier = Modifier.rotate(degrees)
-            )
-        }
-
-        AnimatedVisibility(
-            visible = expanded,
-            enter = expandVertically(),
-            exit = shrinkVertically()
-        ) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                Arrangement.spacedBy(8.dp)
-            ) {
-                descargados.forEach { (titulo, tipo) ->
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.Download,
-                            contentDescription = "descargado",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Column(Modifier.padding(start = 12.dp)) {
-                            Text(titulo, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                            Text("Tipo: $tipo", fontSize = 12.sp, color = Color.Gray)
-                        }
-                    }
-                }
-            }
-        }
-        HorizontalDivider(color = Color.LightGray)
-    }
-}
 @Composable
 fun Configuracion(){
-    var expanded by remember { mutableStateOf(false) }
-    val degrees by animateFloatAsState(if(expanded) 90f else 0f)
     var notificaciones by remember { mutableStateOf(true) }
 
-    Column(Modifier.fillMaxWidth()) {
+    SeccionPerfil("Configuracion") {
         Row(
-            Modifier
-                .fillMaxWidth()
-                .clickable{expanded = !expanded}
-                .padding(16.dp),
+            Modifier.fillMaxWidth(),
             Arrangement.SpaceBetween,
             Alignment.CenterVertically
         ) {
             Text(
-                "Configuracion",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                "Recibir Notificaciones",
+                fontSize = 16.sp
             )
-            Icon(
-                Icons.Default.ChevronRight,
-                if(expanded) "Colapsar" else "Expandir",
-                modifier = Modifier.rotate(degrees)
+            Switch(
+                notificaciones,
+                {notificaciones = it}
             )
         }
-        AnimatedVisibility(
-            visible = expanded,
-            enter = expandVertically(),
-            exit = shrinkVertically()
-        ) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                Arrangement.spacedBy(8.dp)
-            ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    Arrangement.SpaceBetween,
-                    Alignment.CenterVertically
-                ) {
-                    Text(
-                        "Recibir Notificaciones",
-                        fontSize = 16.sp
-                    )
-                    Switch(
-                        notificaciones,
-                        {notificaciones = it}
-                    )
-                }
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    "Ajustes de la Aplicacion",
-                    fontSize = 16.sp
-                )
+        Spacer(Modifier.width(4.dp))
+        Text(
+            "Ajustes de la Aplicacion",
+            fontSize = 16.sp
+        )
+    }
+}
+
+@Composable
+fun BotonCerrarSesion(navController: NavController){
+    Button(
+        onClick = {
+            navController.navigate(AuthDestination.LOGIN){
+                popUpTo(0) {inclusive = true}
             }
-        }
+        },
+        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+    ) {
+        Icon(
+            Icons.AutoMirrored.Filled.Logout,
+            "cerrar sesion"
+        )
+        Text("Cerrar Sesion")
     }
 }

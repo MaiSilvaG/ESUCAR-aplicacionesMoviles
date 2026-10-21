@@ -16,4 +16,9 @@ sealed class SubDestination(val route: String) {
     object DetalleConsulta: SubDestination("detalle_consulta/{consultaId}"){
         fun createRoute(consultaId: Int) = "detalle_consulta/$consultaId"
     }
+
+    //ruta formulario para publicar material
+    object PublicarMaterial: SubDestination("publicar_material/{asignaturaId}"){
+        fun createRoute(asignaturaId: Int) = "publicar_material/$asignaturaId"
+    }
 }

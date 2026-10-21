@@ -140,7 +140,7 @@ fun ConsultaCard(item: ConsultaDetalle,
                     item.unidad.nombre,
                     fontWeight = FontWeight.Bold,
                     fontSize = 17.sp,
-                    color = Color(0, 0, 139)
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Icon(
                     imageVector = Icons.Default.ChevronRight,
@@ -159,6 +159,7 @@ fun ConsultaCard(item: ConsultaDetalle,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.weight(1f),
                     overflow = TextOverflow.Ellipsis
                 )

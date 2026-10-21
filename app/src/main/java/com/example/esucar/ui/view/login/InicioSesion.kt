@@ -40,7 +40,14 @@ import com.example.esucar.data.Sesion
 import com.example.esucar.data.entity.Usuario
 import com.example.esucar.ui.view.navigation.Destination
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import com.example.esucar.R
 
+private const val SIGLA = "ESUCAR"
+private const val NOMBRE_COMPLETO = "Escuela de Suboficiales de Carabineros de Chile"
 class LoginViewModel(app: Application): AndroidViewModel(app){
     private val db = AppDatabase.getInstance(app)
 
@@ -87,12 +94,25 @@ fun InicioSesion(navController: NavController,
         Arrangement.spacedBy(12.dp),
         Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(R.drawable.logo),
+            contentDescription = "Logo de $SIGLA",
+            modifier = Modifier.padding(top = 40.dp).size(120.dp)
+        )
+
         Text(
-            text = "Iniciar Sesion",
-            fontSize = 30.sp,
+            SIGLA,
+            fontSize = 34.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 20.dp, top = 35.dp)
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Text(
+            NOMBRE_COMPLETO,
+            textAlign = TextAlign.Center,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
         )
 
         OutlinedTextField(

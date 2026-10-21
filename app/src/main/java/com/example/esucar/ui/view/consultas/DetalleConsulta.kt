@@ -144,7 +144,7 @@ fun CabeceraConsulta(detalle: ConsultaDetalle, mostrarEstudiante: Boolean){
                 detalle.unidad.nombre,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = Color(0, 0, 139)
+                color = MaterialTheme.colorScheme.primary
             )
             Text(
                 consulta.fecha,
@@ -157,7 +157,7 @@ fun CabeceraConsulta(detalle: ConsultaDetalle, mostrarEstudiante: Boolean){
             consulta.asunto,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.secondary
         )
         //informacion de la persona
         Text(

@@ -5,13 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.esucar.ui.view.navigation.AppNavHost
-
+import com.example.esucar.ui.theme.EsucarTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            AppNavHost()
+            EsucarTheme{
+                AppNavHost()
+            }
         }
     }
 }

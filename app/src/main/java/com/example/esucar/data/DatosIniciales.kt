@@ -47,7 +47,7 @@ val materiales = listOf(
     ),
     Material(
         3,
-        3,
+        4,
         "Guía de ejercicios",
         "PDF",
         false
@@ -85,14 +85,14 @@ val usuarios = listOf(
     Usuario(
         1,
         "Maria Silva",
-        "maria@a.cl",
+        "maria@esucar.com",
         "1234",
         Roles.ESTUDIANTE
     ),
     Usuario(
         2,
-        "Profesor Prueba",
-        "profe@a.cl",
+        "Nicolas Nuñez",
+        "profe@esucar.com",
         "1234",
         Roles.DOCENTE
     )

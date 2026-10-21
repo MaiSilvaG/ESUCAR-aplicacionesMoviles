@@ -40,6 +40,7 @@ import com.example.esucar.ui.view.navigation.Destination
 import com.example.esucar.R
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.ui.layout.ContentScale
 import com.example.esucar.data.AppDatabase
 import com.example.esucar.data.relation.AsignaturaConProgreso
 import com.example.esucar.ui.view.navigation.AuthDestination
@@ -138,11 +139,16 @@ fun AsignaturaCard(item: AsignaturaConProgreso,
     ) {
         Column(Modifier.fillMaxWidth()) {
             Column(
-                Modifier.fillMaxWidth().height(120.dp),
+                Modifier.fillMaxWidth().height(200.dp),
                 Arrangement.Center,
                 Alignment.CenterHorizontally
             ) {
-                Image(painterResource(R.drawable.ic_launcher_foreground), "imagen asignatura")
+                Image(painterResource(R.drawable.fondo),
+                    "imagen asignatura",
+                    modifier = Modifier.fillMaxWidth().height(200.dp),
+                    contentScale = ContentScale.Crop
+                )
+
             }
 
             HorizontalDivider(color = Color.Black, thickness = 1.dp)

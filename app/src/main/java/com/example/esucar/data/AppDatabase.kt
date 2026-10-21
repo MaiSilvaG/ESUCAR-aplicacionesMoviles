@@ -38,17 +38,22 @@ abstract class AppDatabase: RoomDatabase(){
 
         fun getInstance(context: Context): AppDatabase =
             INSTANCE ?: synchronized(this){
-                Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "app_database")
+                INSTANCE ?: Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "app_database"
+                )
                     .addCallback(object: Callback(){
-                        override fun onCreate(db: SQLiteConnection) {
-                            super.onCreate(db)
+                        override fun onCreate(connection: SQLiteConnection) {
+                            super.onCreate(connection)
                             CoroutineScope(Dispatchers.IO).launch {
-                                val bd = getInstance(context)
-                                bd.asignaturaDao().insertarTodas(asignaturas)
-                                bd.unidadDao().insertarTodas(unidades)
-                                bd.materialDao().insertarTodos(materiales)
-                                bd.consultaDao().insertarTodas(consultas)
-                                bd.usuarioDao().insertarTodos(usuarios)
+                                INSTANCE?.let { bd ->
+                                    bd.asignaturaDao().insertarTodas(asignaturas)
+                                    bd.unidadDao().insertarTodas(unidades)
+                                    bd.materialDao().insertarTodos(materiales)
+                                    bd.consultaDao().insertarTodas(consultas)
+                                    bd.usuarioDao().insertarTodos(usuarios)
+                                }
                             }
                         }
                     })
