@@ -14,6 +14,9 @@ interface UsuarioDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarTodos(lista: List<Usuario>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertar(usuario: Usuario): Long
+
     @Query("SELECT * FROM usuarios WHERE rol = :rol LIMIT 1")
     suspend fun obtenerPorRol(rol: String): Usuario?
 }

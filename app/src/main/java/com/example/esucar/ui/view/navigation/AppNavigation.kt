@@ -35,6 +35,7 @@ import com.example.esucar.ui.view.consultas.Consultas
 import com.example.esucar.ui.view.consultas.DetalleConsulta
 import com.example.esucar.ui.view.consultas.FormularioConsulta
 import com.example.esucar.ui.view.login.Login
+import com.example.esucar.ui.view.login.Registro
 import com.example.esucar.ui.view.perfil.Perfil
 
 enum class Destination(
@@ -51,6 +52,7 @@ enum class Destination(
 
 object AuthDestination {
     const val LOGIN = "login"
+    const val REGISTRO = "registro"
 }
 
 @Composable
@@ -61,7 +63,8 @@ fun AppNavHost(
     val startDestination = AuthDestination.LOGIN
     val pantallaActual by navController.currentBackStackEntryAsState()
     val rutaActual = pantallaActual?.destination?.route
-    val mostrarBarra = rutaActual != AuthDestination.LOGIN
+    val mostrarBarra = rutaActual != AuthDestination.LOGIN &&
+            rutaActual != AuthDestination.REGISTRO
 
     Scaffold(
         modifier = modifier,
@@ -109,6 +112,9 @@ fun AppNavHost(
                 Login(navController)
             }
 
+            composable(AuthDestination.REGISTRO){
+                Registro(navController)
+            }
             composable(Destination.HOME.route) {
                 Inicio(navController)
             }

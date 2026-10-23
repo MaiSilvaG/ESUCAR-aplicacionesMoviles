@@ -41,10 +41,14 @@ import com.example.esucar.data.entity.Usuario
 import com.example.esucar.ui.view.navigation.Destination
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.esucar.R
+import com.example.esucar.ui.view.navigation.AuthDestination
 
 private const val SIGLA = "ESUCAR"
 private const val NOMBRE_COMPLETO = "Escuela de Suboficiales de Carabineros de Chile"
@@ -68,7 +72,7 @@ fun Login(navController: NavController) {
 @Composable
 fun InteriorLogin(innerPadding: PaddingValues, navController: NavController) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().imePadding(),
         contentPadding = innerPadding,
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -96,7 +100,7 @@ fun InicioSesion(navController: NavController,
     ) {
         Image(
             painter = painterResource(R.drawable.logo),
-            contentDescription = "Logo de $SIGLA",
+            contentDescription = "logo",
             modifier = Modifier.padding(top = 40.dp).size(120.dp)
         )
 
@@ -119,7 +123,7 @@ fun InicioSesion(navController: NavController,
             value = correo,
             onValueChange = {correo = it},
             label = {Text("Correo")},
-            placeholder = {Text("ejemplo@duocuc.cl")},
+            placeholder = {Text("ejemplo@esucar.com")},
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth()
@@ -175,6 +179,24 @@ fun InicioSesion(navController: NavController,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(start = 8.dp)
             )
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "¿No tienes cuenta?",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.primary
+            )
+            TextButton(onClick = {
+                navController.navigate(AuthDestination.REGISTRO)
+            }) {
+                Text(
+                    "Registrate",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+            }
         }
     }
 }

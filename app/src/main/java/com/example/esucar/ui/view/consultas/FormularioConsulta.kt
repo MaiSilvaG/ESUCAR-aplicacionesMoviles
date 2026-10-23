@@ -136,7 +136,10 @@ fun FormularioConsulta(navController: NavController,
         },
     ) { innerPadding ->
         LazyColumn(
-            Modifier.fillMaxSize().padding(innerPadding).padding(16.dp),
+            Modifier.fillMaxSize()
+                .imePadding()
+                .padding(innerPadding)
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
